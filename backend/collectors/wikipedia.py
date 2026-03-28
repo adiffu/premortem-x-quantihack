@@ -249,6 +249,10 @@ def clamp01(value: float) -> float:
     return max(0.0, min(1.0, value))
 
 
+def format_wiki_signal(value: float) -> float:
+    return round(clamp01(float(value)), 4)
+
+
 def score_page_metrics(metrics: Dict, baseline: Dict) -> Tuple[float, List[str], Dict]:
     revert_z = max(0.0, z_score(metrics["revert_rate"], baseline["revert_rate_mean"], baseline["revert_rate_std"]))
     edit_spike_z = max(
@@ -388,11 +392,12 @@ def aggregate_company_wiki_signal(
     base_score = mean([row["score"] for row in top_k]) if top_k else 0.0
     anomaly_count = sum(len(row["flags"]) for row in top_k)
     anomaly_penalty = min(0.25, anomaly_count * 0.02)
-    company_score = clamp01(base_score + anomaly_penalty)
+    company_score = format_wiki_signal(base_score + anomaly_penalty)
 
     return {
         "ticker": ticker,
-        "wiki_signal": round(company_score, 4),
+        "wiki": company_score,
+        "wiki_signal": company_score,
         "pages_considered": len(page_results),
         "top_k": min(TOP_K_STRESSED, len(page_results)),
         "anomaly_penalty": round(anomaly_penalty, 4),
@@ -428,7 +433,7 @@ def run_company_wiki_pipeline() -> Dict:
 
         company_record = store.get(ticker, {})
         signals = company_record.get("signals", {})
-        signals["wiki"] = result["wiki_signal"]
+        signals["wiki"] = format_wiki_signal(result.get("wiki_signal", 0.0))
         company_record["signals"] = signals
         company_record["wiki_detail"] = result
         company_record["score"] = compute_composite_score(signals)
