@@ -4,12 +4,13 @@ def compute_composite_score(signals):
     Ref: premortem_architecture.jsx
     """
     weights = {
-        "fda": 0.25,      # T1 - most credible
-        "reddit": 0.20,   # T1 - live consumer signal
-        "wiki": 0.20,     # T1 - quant novelty
-        "fred": 0.15,     # T1 - macro context
-        "adzuna": 0.12,   # T2 - talent signal
+        "fda": 0.23,      # T1 - most credible
+        "reddit": 0.18,   # T1 - live consumer signal
+        "wiki": 0.18,     # T1 - quant novelty
+        "fred": 0.14,     # T1 - macro context
+        "adzuna": 0.11,   # T2 - talent signal
         "edgar": 0.08,    # T2 - legal signal
+        "trends": 0.08,   # T2 - search-intent stress signal
     }
     
     score = 0.0
