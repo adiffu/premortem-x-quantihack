@@ -12,12 +12,11 @@ from typing import Dict, Any, List, Optional
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 WEIGHTS: Dict[str, float] = {
-    "fda_recall_velocity": 0.25,
-    "reddit_oos_velocity":  0.20,
-    "wikipedia_edit_wars":  0.20,
-    "fred_macro_backdrop":  0.15,
-    "adzuna_job_velocity":  0.12,
-    "edgar_8k_keywords":    0.08,
+    "fda_recall_velocity": 0.31,
+    "wikipedia_edit_wars":  0.25,
+    "fred_macro_backdrop":  0.19,
+    "adzuna_job_velocity":  0.15,
+    "edgar_8k_keywords":    0.10,
 }
 
 # ─── Status Labels ────────────────────────────────────────────────────────────
