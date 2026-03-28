@@ -159,7 +159,6 @@ def analyze_sec_8k(document_text: str) -> float:
     # Saturating curve keeps large filings from dominating beyond meaningful signal.
     return _clamp01(1.0 - math.exp(-weighted_hits / 14.0))
 
-
 def _filing_activity_component(filings: List[Dict], now: datetime) -> float:
     """
     Reward unusually active 8-K filing cadence with recency emphasis.
