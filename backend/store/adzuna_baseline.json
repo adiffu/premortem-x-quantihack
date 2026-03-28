@@ -1,0 +1,62 @@
+{
+  "companies": {
+    "Unilever": [
+      {
+        "timestamp": "2026-03-28T13:57:08.372025+00:00",
+        "adjusted_count": 93.1
+      },
+      {
+        "timestamp": "2026-03-28T13:57:24.023409+00:00",
+        "adjusted_count": 93.1
+      },
+      {
+        "timestamp": "2026-03-28T13:57:41.703540+00:00",
+        "adjusted_count": 93.1
+      },
+      {
+        "timestamp": "2026-03-28T13:59:49.226958+00:00",
+        "adjusted_count": 93.1
+      },
+      {
+        "timestamp": "2026-03-28T14:00:39.917133+00:00",
+        "adjusted_count": 93.1
+      }
+    ],
+    "Procter & Gamble": [
+      {
+        "timestamp": "2026-03-28T13:59:53.587153+00:00",
+        "adjusted_count": 12.95
+      },
+      {
+        "timestamp": "2026-03-28T14:00:45.678299+00:00",
+        "adjusted_count": 12.95
+      }
+    ],
+    "Coca-Cola": [
+      {
+        "timestamp": "2026-03-28T13:59:58.192779+00:00",
+        "adjusted_count": 218.39999999999998
+      },
+      {
+        "timestamp": "2026-03-28T14:00:51.519946+00:00",
+        "adjusted_count": 218.39999999999998
+      }
+    ],
+    "PepsiCo": [
+      {
+        "timestamp": "2026-03-28T14:00:06.742399+00:00",
+        "adjusted_count": 2.0
+      },
+      {
+        "timestamp": "2026-03-28T14:00:57.504771+00:00",
+        "adjusted_count": 2.0
+      }
+    ],
+    "Hershey": [
+      {
+        "timestamp": "2026-03-28T14:01:03.892923+00:00",
+        "adjusted_count": 7.35
+      }
+    ]
+  }
+}
