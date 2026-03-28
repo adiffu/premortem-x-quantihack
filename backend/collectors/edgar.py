@@ -32,9 +32,40 @@ KEYWORD_WEIGHTS = {
     "production interruption": 2.2,
     "inventory shortage": 2.0,
     "supplier delay": 1.8,
+    "vendor delay": 1.8,
+    "raw material": 1.5,
+    "capacity constraint": 1.6,
+    "transportation": 1.2,
+    "distribution": 1.2,
+    "freight": 1.2,
+    "lead time": 1.4,
+    "bottleneck": 1.6,
+    "backlog": 1.4,
+    "fulfillment": 1.1,
+    "procurement": 1.1,
+    "logistics": 1.1,
+    "supply chain": 1.0,
+    "supply": 0.7,
+    "inventory": 0.7,
     "shortage": 1.3,
     "disruption": 1.1,
     "delay": 0.8,
+}
+
+BROAD_TERM_WEIGHTS = {
+    r"\bdisrupt(?:ion|ed|ive)?\b": 0.9,
+    r"\bdelay(?:ed|s|ing)?\b": 0.7,
+    r"\bshort(?:age|ages)\b": 1.0,
+    r"\blogistic(?:s)?\b": 0.8,
+    r"\bsupplier(?:s)?\b": 0.6,
+    r"\binventor(?:y|ies)\b": 0.6,
+    r"\bbacklog(?:s)?\b": 0.8,
+    r"\bbottleneck(?:s)?\b": 0.9,
+    r"\bprocure(?:ment|ments)?\b": 0.7,
+    r"\bfreight\b": 0.8,
+    r"\bdistribution\b": 0.8,
+    r"\bfulfillment\b": 0.7,
+    r"\blead\s+time(?:s)?\b": 0.9,
 }
 
 
@@ -121,8 +152,35 @@ def analyze_sec_8k(document_text: str) -> float:
         occurrences = len(re.findall(re.escape(phrase), lowered))
         weighted_hits += min(occurrences, 3) * weight
 
+    for pattern, weight in BROAD_TERM_WEIGHTS.items():
+        occurrences = len(re.findall(pattern, lowered))
+        weighted_hits += min(occurrences, 6) * weight
+
     # Saturating curve keeps large filings from dominating beyond meaningful signal.
-    return _clamp01(1.0 - math.exp(-weighted_hits / 8.0))
+    return _clamp01(1.0 - math.exp(-weighted_hits / 14.0))
+
+
+def _filing_activity_component(filings: List[Dict], now: datetime) -> float:
+    """
+    Reward unusually active 8-K filing cadence with recency emphasis.
+    """
+    if not filings:
+        return 0.0
+
+    recent_30d = 0
+    recent_90d = 0
+
+    for filing in filings:
+        filing_dt = datetime.fromisoformat(filing["filing_date"]).replace(tzinfo=timezone.utc)
+        age_days = max(0, (now - filing_dt).days)
+        if age_days <= 30:
+            recent_30d += 1
+        if age_days <= 90:
+            recent_90d += 1
+
+    burst_component = _clamp01(recent_30d / 3.0)
+    sustained_component = _clamp01(recent_90d / 8.0)
+    return _clamp01((0.6 * burst_component) + (0.4 * sustained_component))
 
 
 def fetch_edgar_8k_score(ticker: str, max_filings: int = MAX_8K_LOOKBACK) -> float:
@@ -170,8 +228,13 @@ def fetch_edgar_8k_score(ticker: str, max_filings: int = MAX_8K_LOOKBACK) -> flo
             return 0.0
 
         severity_component = weighted_score_sum / recency_weight_sum
-        frequency_component = nonzero_filing_scores / float(len(filings))
-        final_score = _clamp01((0.75 * severity_component) + (0.25 * frequency_component))
+        phrase_coverage_component = nonzero_filing_scores / float(len(filings))
+        activity_component = _filing_activity_component(filings, now)
+        final_score = _clamp01(
+            (0.60 * severity_component)
+            + (0.20 * phrase_coverage_component)
+            + (0.20 * activity_component)
+        )
 
         return round(final_score, 4)
     except Exception as exc:
